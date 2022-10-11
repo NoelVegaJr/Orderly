@@ -16,4 +16,9 @@ export default NextAuth({
       clientSecret: process.env.LINKEDIN_CLIENT_SECRET as string,
     }),
   ],
+  callbacks: {
+    async session({ session, token, user }) {
+      return { ...session, user };
+    },
+  },
 });

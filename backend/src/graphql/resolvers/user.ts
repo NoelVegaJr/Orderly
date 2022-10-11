@@ -1,0 +1,91 @@
+import {
+  CreateUsernameResponse,
+  GraphQLContext,
+  SearchUsernameResponse,
+} from '../../types/types';
+
+import { ApolloError } from 'apollo-server-core';
+import { User } from '@prisma/client';
+
+export const userResolvers = {
+  Query: {
+    searchUsers: async (
+      _: any,
+      args: { searchedUsername: string },
+      ctx: GraphQLContext
+    ): Promise<Array<User> | ApolloError> => {
+      const { searchedUsername } = args;
+      const { session, prisma } = ctx;
+
+      if (!session?.user) {
+        console.log('no user found');
+        return new ApolloError('Not authorized');
+      }
+
+      const {
+        user: { username: myUsername },
+      } = session;
+
+      try {
+        const users = await prisma.user.findMany({
+          where: {
+            username: {
+              contains: searchedUsername,
+              not: myUsername,
+              mode: 'insensitive',
+            },
+          },
+        });
+        console.log('Searched Users: ', searchedUsername, users);
+        return users;
+      } catch (error: any) {
+        console.log('searchUsers error', error);
+        throw new ApolloError(error?.message);
+      }
+    },
+  },
+  Mutation: {
+    createUsername: async (
+      _: any,
+      args: { username: string },
+      ctx: GraphQLContext
+    ): Promise<CreateUsernameResponse> => {
+      console.log('hello');
+      const { username } = args;
+      const { session, prisma } = ctx;
+      console.log(session);
+      if (!session?.user) {
+        return { error: 'Not authorized' };
+      }
+
+      const { id } = session.user;
+
+      try {
+        const existingUsername = await prisma.user.findFirst({
+          where: {
+            username: username,
+          },
+        });
+        if (existingUsername) {
+          console.log('username exists');
+          return { error: 'This username already exists' };
+        }
+
+        await ctx.prisma.user.update({
+          where: {
+            id: id,
+          },
+          data: {
+            username,
+          },
+        });
+
+        return { success: true };
+      } catch (error: any) {
+        console.log(error);
+        return { error: error.message };
+      }
+    },
+  },
+};
+export default userResolvers;

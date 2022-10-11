@@ -5,13 +5,9 @@ import ProviderButton from './provider-button';
 
 interface IAuthProps {
   session: Session | null;
-  reloadSession: () => void;
 }
 
-const Auth: React.FunctionComponent<IAuthProps> = ({
-  session,
-  reloadSession,
-}) => {
+const Auth: React.FunctionComponent<IAuthProps> = ({ session }) => {
   return (
     <div className='h-full text-white grid place-content-center'>
       {session ? (
