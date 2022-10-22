@@ -89,6 +89,32 @@ const taskResolvers = {
         return { error: error?.message };
       }
     },
+    updateTaskListOrder: async (
+      _: any,
+      args: {
+        conversationId: string;
+        taskLists: Array<{ id: string; index: string }>;
+      },
+      ctx: GraphQLContext
+    ) => {
+      const { conversationId, taskLists } = args;
+      const { session, prisma } = ctx;
+
+      console.log('UPDATING TASK LIST ORDER: ', conversationId, taskLists);
+
+      for (let taskList of taskLists) {
+        console.log(taskList, 'list');
+        await prisma.taskList.update({
+          where: {
+            id: taskList.id,
+          },
+          data: {
+            index: +taskList.index,
+          },
+        });
+      }
+      return { success: true };
+    },
   },
 };
 
