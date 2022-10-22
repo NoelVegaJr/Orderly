@@ -30,6 +30,9 @@ const taskResolvers = {
           include: {
             tasks: true,
           },
+          orderBy: {
+            index: 'asc',
+          },
         });
         return taskLists;
       } catch (error: any) {

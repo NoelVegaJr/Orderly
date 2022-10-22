@@ -93,6 +93,7 @@ model TaskList {
   conversationId String
   dateCreated DateTime
   tasks Task[] 
+  index Int @default(999999999)
 }
 
 model Task {
@@ -101,4 +102,5 @@ model Task {
   taskListId String
   dateCreated DateTime
   taskList TaskList @relation(fields: [taskListId], references: [id])
+  index Int @default(999999999)
 }
