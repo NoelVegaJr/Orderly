@@ -21,6 +21,17 @@ export default {
         }
       }
     `,
+    createNewMessage: gql`
+      mutation CreateNewMessage($text: String) {
+        createNewMessage(text: $text)
+      }
+    `,
   },
-  Subscriptions: {},
+  Subscriptions: {
+    msg: gql`
+      subscription NewMessage {
+        msg
+      }
+    `,
+  },
 };

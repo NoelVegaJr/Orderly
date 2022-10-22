@@ -9,10 +9,20 @@ export const userTypeDef = gql`
 
   type Query {
     searchUsers(searchedUsername: String!): [SearchedUser]
+    currentNumber: Int
+  }
+
+  type Subscription {
+    msg: String
   }
 
   type Mutation {
     createUsername(username: String): CreateUsernameResponse!
+    createNewMessage(text: String): String
+  }
+
+  type CurrentNumber {
+    number: Int
   }
 
   type CreateUsernameResponse {

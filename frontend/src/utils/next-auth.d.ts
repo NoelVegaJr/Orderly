@@ -2,11 +2,11 @@ import 'next-auth';
 
 declare module 'next-auth' {
   interface Session {
-    user: User | null;
+    user: User;
   }
 
   interface User {
-    id?: string;
+    id: string;
     name: string;
     username: string;
     email: string;

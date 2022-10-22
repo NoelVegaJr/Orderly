@@ -1,28 +1,31 @@
-import * as React from 'react';
-import { useState } from 'react';
-import ConversationModal from './ConversationListModal/ConversationListModal';
+import { Dispatch, SetStateAction } from 'react';
+import Conversation from './Conversation';
+import { IConversation } from '../../../utils/types';
 
-interface IConversationListProps {}
+interface ConversationListProps {
+  convos: IConversation[];
+  setOpenConvo: Dispatch<SetStateAction<IConversation | undefined>>;
+  openConvo: IConversation;
+}
 
-const ConversationList: React.FunctionComponent<IConversationListProps> = (
-  props
-) => {
-  const [showModal, setShowModal] = useState<boolean>(false);
-
-  const closeModal = () => {
-    setShowModal(false);
-  };
-
+const ConversationList: React.FC<ConversationListProps> = ({
+  convos,
+  setOpenConvo,
+  openConvo,
+}) => {
   return (
-    <div className='w-full'>
-      <button
-        onClick={() => setShowModal(true)}
-        className='px-4 py-2 m-2 bg-neutral-900 w-52 lg:w-96'
-      >
-        Find or start a conversation
-      </button>
-      {showModal && <ConversationModal close={closeModal} />}
-    </div>
+    <ul className=' rounded grow bg-neutral-800 flex flex-col gap-1 overflow-y-auto'>
+      {convos?.map((c: IConversation) => {
+        return (
+          <Conversation
+            key={c.id}
+            convo={c}
+            isOpen={c.id === openConvo.id}
+            onClick={() => setOpenConvo(c)}
+          />
+        );
+      })}
+    </ul>
   );
 };
 

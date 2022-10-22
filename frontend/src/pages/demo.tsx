@@ -6,6 +6,7 @@ import Chat from '../components/chat/chat';
 
 export const getServerSideProps = async (context: NextPageContext) => {
   const session = await getSession(context);
+
   console.log(session);
   if (!session?.user?.username) {
     return {
@@ -26,7 +27,7 @@ interface IDemoPageProps {
 }
 
 const DemoPage: React.FunctionComponent<IDemoPageProps> = ({ session }) => {
-  return <Chat />;
+  return <Chat session={session} />;
 };
 
 export default DemoPage;

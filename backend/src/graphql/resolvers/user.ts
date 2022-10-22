@@ -16,7 +16,7 @@ export const userResolvers = {
     ): Promise<Array<User> | ApolloError> => {
       const { searchedUsername } = args;
       const { session, prisma } = ctx;
-
+      console.log(session);
       if (!session?.user) {
         console.log('no user found');
         return new ApolloError('Not authorized');
@@ -32,10 +32,10 @@ export const userResolvers = {
             username: {
               contains: searchedUsername,
               not: myUsername,
-              mode: 'insensitive',
             },
           },
         });
+        console.log(users);
         console.log('Searched Users: ', searchedUsername, users);
         return users;
       } catch (error: any) {
@@ -85,6 +85,22 @@ export const userResolvers = {
         console.log(error);
         return { error: error.message };
       }
+    },
+    createNewMessage: (_: any, args: { text: string }, ctx: GraphQLContext) => {
+      console.log(args.text);
+      ctx.pubsub.publish('NewMessage', {
+        msg: args.text,
+      });
+      return args.text;
+    },
+  },
+  Subscription: {
+    msg: {
+      subscribe: (parent: any, __: any, context: GraphQLContext) => {
+        // console.log(context);
+        const { pubsub } = context;
+        return pubsub.asyncIterator(['NewMessage']);
+      },
     },
   },
 };

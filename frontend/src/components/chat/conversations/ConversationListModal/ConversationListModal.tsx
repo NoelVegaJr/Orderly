@@ -1,5 +1,5 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
-import * as React from 'react';
+import { useContext } from 'react';
 import { FormEvent, useState } from 'react';
 import {
   CreateConversationResponseData,
@@ -14,7 +14,8 @@ import UserOperations from '../../../../graphql/operations/user';
 import ConversationOperations from '../../../../graphql/operations/conversation';
 import ParticipantList from './ParticipantsList';
 import { toast } from 'react-hot-toast';
-import { useSession } from 'next-auth/react';
+import { UserContext } from '../../../../context/user';
+import { totalmem } from 'os';
 
 interface IConversationModalProps {
   close: () => void;
@@ -23,8 +24,10 @@ interface IConversationModalProps {
 const ConversationModal: React.FunctionComponent<IConversationModalProps> = ({
   close,
 }) => {
+  const userCtx = useContext(UserContext);
   const [username, setUsername] = useState<string>('');
   const [participants, setParticipants] = useState<Array<SearchedUser>>([]);
+
   const [searchUsers, { data, error, loading }] = useLazyQuery<
     SearchUsersData,
     SearchUsersInput
@@ -45,32 +48,32 @@ const ConversationModal: React.FunctionComponent<IConversationModalProps> = ({
   };
 
   const addParticipant = (user: SearchedUser) => {
-    const existingParticipant = participants.find((p) => p.id === user.id);
+    const existingParticipant = participants.find(
+      (participant) => participant.id === userCtx?.id
+    );
     if (existingParticipant) return;
     setParticipants((prevParticipants) => [...prevParticipants, user]);
   };
   const removeParticipant = (user: SearchedUser) => {
     setParticipants((prevParticipants) => {
       const listWithRemovedParticipant = prevParticipants.filter(
-        (p) => p.id !== user.id
+        (participant) => participant.id !== user.id
       );
       return [...listWithRemovedParticipant];
     });
   };
-  const { data: session } = useSession();
+
   const handleCreateConversation = async () => {
+    if (!userCtx?.id) return toast.error('Could not create conversation');
     try {
       // create conversation mutation
-      const participantIds = [
-        ...participants.map((p) => p.id),
-        session?.user?.id as string,
-      ];
-      const newConversation = await createConversation({
-        variables: { participantIds: participantIds },
+      const participantIds = [...participants.map((p) => p.id), userCtx.id];
+      await createConversation({
+        variables: { participantUserIds: participantIds },
       });
-      console.log('Creating new conversation');
+      close();
+      toast.success('Created new conversation');
     } catch (error: any) {
-      console.log('Create conversation error ', error.message);
       toast.error(error.message);
     }
   };

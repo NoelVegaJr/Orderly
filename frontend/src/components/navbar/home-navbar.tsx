@@ -8,7 +8,7 @@ interface IHomeNavbarProps {}
 const HomeNavbar: React.FunctionComponent<IHomeNavbarProps> = (props) => {
   const { data: session, status } = useSession();
   return (
-    <nav className='text-white  flex items-center justify-between gap-6  px-6 h-24'>
+    <nav className='text-white  flex items-center justify-between gap-6  px-6 h-24 bg-slate-900'>
       <div className='flex items-center font-bold gap-4 '>
         <p className='mr-6 text-2xl'>Orderly</p>
         <div className='hidden lg:flex gap-4 '>
