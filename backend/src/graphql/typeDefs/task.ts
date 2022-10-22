@@ -24,10 +24,19 @@ export const taskTypeDefs = gql`
     taskLists: [TaskList!]
     error: String
   }
+  input TaskListReorderInput {
+    id: String!
+    index: String!
+  }
 
   type Mutation {
     createTask(taskListId: String!, title: String!): MutationResponse!
     createTaskList(conversationId: String!, title: String!): MutationResponse!
+    updateTaskListOrder(
+      conversationId: String!
+      taskLists: [TaskListReorderInput!]
+    ): MutationResponse!
+    updateTaskOrder(taskLisId: String!): MutationResponse!
   }
 
   type MutationResponse {
