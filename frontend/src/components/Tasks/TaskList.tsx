@@ -12,12 +12,35 @@ const TaskList: React.FunctionComponent<ITaskListProps> = ({
   taskList,
   conversation,
 }) => {
-  const { title, tasks } = taskList;
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [title, setTitle] = useState(taskList.title);
+  const { tasks } = taskList;
 
   return (
     <div className=' h-full '>
       <div className='w-60   p-2 bg-neutral-600 flex flex-col  max-h-full   gap-2   rounded-lg'>
-        <p className='text-white'>{title}</p>
+        {!editingTitle ? (
+          <p
+            onClick={() => {
+              setEditingTitle(true);
+            }}
+            className='text-white p-2 font-semibold'
+          >
+            {title}
+          </p>
+        ) : (
+          <input
+            type='text'
+            value={title}
+            autoFocus
+            onBlur={() => {
+              setEditingTitle(false);
+            }}
+            onChange={(e) => setTitle(e.target.value)}
+            onKeyUp={(e) => e.key === 'Enter' && setEditingTitle(false)}
+            className='p-2 outline-none rounded font-semibold'
+          />
+        )}
         <Droppable droppableId={`${taskList.id}`}>
           {(provided, snapshot) => {
             return (
