@@ -26,17 +26,25 @@ export const taskTypeDefs = gql`
   }
   input TaskListReorderInput {
     id: String!
-    index: String!
+    index: Int!
+  }
+
+  input TasksReorderInput {
+    id: String!
+    index: Int!
   }
 
   type Mutation {
     createTask(taskListId: String!, title: String!): MutationResponse!
     createTaskList(conversationId: String!, title: String!): MutationResponse!
-    updateTaskListOrder(
+    reorderTaskLists(
       conversationId: String!
       taskLists: [TaskListReorderInput!]
     ): MutationResponse!
-    updateTaskOrder(taskLisId: String!): MutationResponse!
+    reorderTasks(
+      taskListId: String!
+      tasks: [TasksReorderInput!]
+    ): MutationResponse!
   }
 
   type MutationResponse {

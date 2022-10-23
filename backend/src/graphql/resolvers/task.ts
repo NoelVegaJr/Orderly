@@ -28,7 +28,11 @@ const taskResolvers = {
             conversationId,
           },
           include: {
-            tasks: true,
+            tasks: {
+              orderBy: {
+                index: 'asc',
+              },
+            },
           },
           orderBy: {
             index: 'asc',
@@ -89,7 +93,7 @@ const taskResolvers = {
         return { error: error?.message };
       }
     },
-    updateTaskListOrder: async (
+    reorderTaskLists: async (
       _: any,
       args: {
         conversationId: string;
@@ -99,6 +103,10 @@ const taskResolvers = {
     ) => {
       const { conversationId, taskLists } = args;
       const { session, prisma } = ctx;
+
+      if (!session) {
+        return { error: 'Not authorized' };
+      }
 
       console.log('UPDATING TASK LIST ORDER: ', conversationId, taskLists);
 
@@ -113,6 +121,38 @@ const taskResolvers = {
           },
         });
       }
+      return { success: true };
+    },
+    reorderTasks: async (
+      _: any,
+      args: {
+        taskListId: string;
+        tasks: Array<{ id: string; index: string }>;
+      },
+      ctx: GraphQLContext
+    ) => {
+      const { taskListId, tasks } = args;
+      const { session, prisma } = ctx;
+
+      if (!session) {
+        return { error: 'Not authorized' };
+      }
+
+      console.log('UPDATING TASK ORDER: ', taskListId, tasks);
+
+      for (let task of tasks) {
+        console.log(task, 'list');
+        await prisma.task.update({
+          where: {
+            id: task.id,
+          },
+          data: {
+            taskListId: taskListId,
+            index: +task.index,
+          },
+        });
+      }
+
       return { success: true };
     },
   },
