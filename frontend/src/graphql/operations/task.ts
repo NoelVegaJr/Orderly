@@ -33,5 +33,30 @@ export default {
         }
       }
     `,
+    reorderTaskLists: gql`
+      mutation ReorderTaskLists(
+        $conversationId: String!
+        $taskLists: [TaskListReorderInput!]
+      ) {
+        reorderTaskLists(
+          conversationId: $conversationId
+          taskLists: $taskLists
+        ) {
+          error
+          success
+        }
+      }
+    `,
+    reorderTasks: gql`
+      mutation ReorderTasks(
+        $taskListId: String!
+        $tasks: [TasksReorderInput!]
+      ) {
+        reorderTasks(taskListId: $taskListId, tasks: $tasks) {
+          error
+          success
+        }
+      }
+    `,
   },
 };
